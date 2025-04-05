@@ -65,7 +65,7 @@ def view_candidates_page():
         
         try:
             job_description = resume_scanner.get_job_description(job_id)
-            st.write("Job description fetch attempt completed")
+            st.write("Job description fetched successfully")
         except Exception as e:
             st.error(f"Error fetching job description: {e}")
             st.stop()
@@ -81,7 +81,7 @@ def view_candidates_page():
             try:
                 all_candidates = resume_scanner.get_all_candidates()
                 if not all_candidates:
-                    st.warning("No candidate resumes found in the database.")
+                    st.warning("No candidate resumes found.")
                     st.session_state.candidate_matches = None
                     st.stop()
             except Exception as e:
@@ -146,9 +146,6 @@ def view_candidates_page():
             
             if save_submit:
                 try:
-                    # Debug the data being passed
-                    st.write(f"Attempting to save data for {len(candidate_matches)} candidates")
-                    
                     # Save the results back to the database
                     saved = resume_scanner.save_match_results(job_id, candidate_matches)
                     
@@ -160,9 +157,8 @@ def view_candidates_page():
                     st.error(f"Error saving to database: {str(e)}")
                     st.write("Error details:", str(e))
 
-    # Back to Main Page with a unique key
+    # Back to Main Page
     if st.button("Back to Home Page", key="back_from_view_candidates"):
-        # Clear session state when going back
         st.session_state.candidate_matches = None
         st.session_state.job_id = None
         switch_page("main")

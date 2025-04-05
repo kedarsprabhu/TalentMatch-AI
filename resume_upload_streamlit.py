@@ -68,7 +68,7 @@ def insert_resume_into_db(resume_text):
 
                 # Commit the transaction
                 conn.commit()
-                st.success("Resume uploaded and stored in the database successfully!")
+                st.success("Resume uploaded and stored successfully!")
 
     except Exception as e:
         st.error(f"Error: {e}")
@@ -111,7 +111,6 @@ def insert_job_description_into_db(job_description):
         if conn:
             cursor.close()
             conn.close()
-            st.write("Database connection closed.")
 
 # Function to scrape job description from a URL
 def scrape_job_description(url):
@@ -137,9 +136,6 @@ def scrape_job_description(url):
 
 # Main page
 def main_page():
-    # st.title("Resume Upload")
-    
-    # Let Streamlit handle the uploader state automatically
     if "resume_uploader_key" not in st.session_state:
         st.session_state.resume_uploader_key = str(uuid4())  # Store a unique key
 
