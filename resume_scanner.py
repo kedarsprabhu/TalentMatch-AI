@@ -120,7 +120,12 @@ def save_match_results(job_id, candidate_matches):
                     query = """
                     INSERT INTO job_candidate_match
                     (job_id, candidate_id, match_score, match_summary, created_at)
-                    VALUES (%s, %s, %s, %s, %s);
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (job_id, candidate_id)
+                    DO UPDATE SET
+                        match_score = EXCLUDED.match_score,
+                        match_summary = EXCLUDED.match_summary,
+                        created_at = EXCLUDED.created_at;
                     """
                     created_at = datetime.now()
                     cursor.execute(query, (
