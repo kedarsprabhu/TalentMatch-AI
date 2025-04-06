@@ -62,7 +62,7 @@ def summarize_candidate(resume_text, job_description, groq_api_key=None):
     # Set up the model
     model = ChatGroq(
         temperature=0.2, 
-        groq_api_key=groq_api_key, 
+        api_key=groq_api_key, 
         model_name="llama-3.1-8b-instant"
     )
     
