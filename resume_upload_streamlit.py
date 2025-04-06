@@ -50,6 +50,7 @@ def extract_candidate_name(resume_text):
 
 # Function to insert resume into the database
 def insert_resume_into_db(resume_text):
+    conn = None
     try:
         # Connect to the database
         conn_string = f"host={DB_HOST} dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} port={DB_PORT}"
@@ -80,6 +81,7 @@ def insert_resume_into_db(resume_text):
 
 # Function to insert job description into the database
 def insert_job_description_into_db(job_description):
+    conn = None
     try:
         # Connect to the database
         conn_string = f"host={DB_HOST} dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} port={DB_PORT}"
