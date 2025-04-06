@@ -109,6 +109,7 @@ def get_job_description(job_id):
 
 
 def save_match_results(job_id, candidate_matches):
+    conn=None
     try:
         # Connect to the database
         conn_string = f"host={DB_HOST} dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} port={DB_PORT}"
