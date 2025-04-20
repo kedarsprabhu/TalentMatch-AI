@@ -5,6 +5,7 @@
 ## Overview
 
 TalentMatch AI is an advanced resume scanning and candidate matching platform that leverages artificial intelligence to identify the best candidates for your job openings. The system analyzes resumes against job descriptions to provide percentage-based matching scores and detailed candidate assessments.
+Try the platform at [TalentMatch AI](https://talentmatchai.streamlit.app/).
 
 ## Features
 
