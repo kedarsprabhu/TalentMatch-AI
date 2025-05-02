@@ -143,3 +143,36 @@ def save_match_results(job_id, candidate_matches):
     except Exception as e:
         print(f"Database error: {str(e)}")
         return False
+    
+def get_all_jobs():
+    """
+    Retrieves all job IDs and descriptions from the database.
+    
+    Returns:
+        list: A list of tuples containing (job_id, job_description)
+    """
+    conn = None
+    try:
+        # Connect to the database
+        conn_string = f"host={DB_HOST} dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} port={DB_PORT}"
+        conn = psycopg.connect(conn_string)
+
+        # Create a cursor
+        cursor = conn.cursor()
+        # conn = get_db_connection()
+        # cursor = conn.cursor()
+        
+        # Query to get all jobs
+        cursor.execute("SELECT job_id, job_description FROM job_descriptions ORDER BY job_id DESC")
+        
+        # Fetch all results
+        all_jobs = cursor.fetchall()
+        
+        # Close connection
+        cursor.close()
+        conn.close()
+        
+        return all_jobs
+    except Exception as e:
+        print(f"Error fetching all jobs: {str(e)}")
+        raise e

@@ -68,13 +68,16 @@ def home_page():
     # Navigation buttons with improved styling
     st.markdown("<h2 class='sub-header'>What would you like to do?</h2>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("📝 Post a Job Description", key="post_job_button", use_container_width=True):
             switch_page("post_job")
     with col2:
         if st.button("🔍 Find Candidates for a Job", key="view_candidates_button", use_container_width=True):
             switch_page("view_candidates")
+    with col3:
+        if st.button("📋 View All Jobs", key="view_jobs_button", use_container_width=True):
+            switch_page("view_jobs")
 
 
 def post_job_description_page():
@@ -94,6 +97,90 @@ def post_job_description_page():
     if st.button("🏠 Back to Home Page", key="back_from_post_job"):
         switch_page("main")
 
+def view_jobs_page():
+    st.markdown("<h1 class='main-header'>View All Jobs</h1>", unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="card">
+        <p>Here are all the jobs currently in the system. You can view job IDs and brief descriptions, 
+        or select a job to find matching candidates.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Get all jobs from the database
+    try:
+        all_jobs = resume_scanner.get_all_jobs()
+        
+        if not all_jobs or len(all_jobs) == 0:
+            st.warning("No jobs found in the database.")
+        else:
+            # Display jobs in a nice table
+            st.markdown("<h2 class='sub-header'>Available Jobs</h2>", unsafe_allow_html=True)
+            
+            # Create a container for the job cards
+            st.markdown("<div class='job-card-container'>", unsafe_allow_html=True)
+            
+            # Split into columns for better layout
+            cols = st.columns(2)
+            
+            for i, (job_id, full_description) in enumerate(all_jobs):
+                # Generate a brief description (first ~50 words)
+                brief_description = " ".join(full_description.split()[:10]) + "..."
+                
+                # Alternate between columns
+                col_idx = i % 2
+                
+                with cols[col_idx]:
+                    st.markdown(f"""
+                    <div class="job-card">
+                        <h3>Job ID: {job_id}</h3>
+                        <p>{brief_description}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Add standard Streamlit buttons instead of custom HTML buttons
+                    button_cols = st.columns(2)
+                    with button_cols[0]:
+                        if st.button("View Details", key=f"view_full_{job_id}"):
+                            st.session_state.full_job_description = full_description
+                            st.session_state.selected_job_id = job_id
+                            st.rerun()
+                    with button_cols[1]:
+                        if st.button("Find Candidates", key=f"find_candidates_{job_id}"):
+                            st.session_state.job_id = job_id
+                            switch_page("view_candidates")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # If a job is selected, display its full description
+            if hasattr(st.session_state, 'full_job_description') and hasattr(st.session_state, 'selected_job_id'):
+                st.markdown(f"<h2 class='sub-header'>Job Details for ID: {st.session_state.selected_job_id}</h2>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class="card full-job-description">
+                    {st.session_state.full_job_description}
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button("Find Candidates for This Job", key="find_candidates_for_selected"):
+                    st.session_state.job_id = st.session_state.selected_job_id
+                    switch_page("view_candidates")
+    
+    except Exception as e:
+        st.markdown(f"""
+        <div class="error-alert">
+            Error fetching jobs: {e}
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Back to Main Page
+    if st.button("🏠 Back to Home Page", key="back_from_view_jobs"):
+        if hasattr(st.session_state, 'full_job_description'):
+            delattr(st.session_state, 'full_job_description')
+        if hasattr(st.session_state, 'selected_job_id'):
+            delattr(st.session_state, 'selected_job_id')
+        switch_page("main")
+
+
 def view_candidates_page():
     st.markdown("<h1 class='main-header'>Find Candidates for a Job</h1>", unsafe_allow_html=True)
     
@@ -107,7 +194,10 @@ def view_candidates_page():
     with st.form("job_form"):
         col1, col2, col3 = st.columns([2, 2, 1])
         with col1:
-            job_id = st.text_input("Enter Job ID", key="job_id_input", autocomplete="on")
+            # Pre-populate the job ID if it was selected from the view jobs page
+            job_id = st.text_input("Enter Job ID", key="job_id_input", 
+                                   value=st.session_state.job_id if st.session_state.job_id else "",
+                                   autocomplete="on")
         with col2:
             num_candidates = st.slider("Top candidates to display", 1, 20, 5)
         with col3:
@@ -261,3 +351,5 @@ elif st.session_state.page == "post_job":
     post_job_description_page()
 elif st.session_state.page == "view_candidates":
     view_candidates_page()
+elif st.session_state.page == "view_jobs":
+    view_jobs_page()
