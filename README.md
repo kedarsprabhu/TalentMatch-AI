@@ -1,6 +1,7 @@
 # TalentMatch AI
 
 *Precision Matching for Your Perfect Hire*
+<img width="917" alt="image" src="https://github.com/user-attachments/assets/018d743f-06d8-42f1-8fdc-9364e50d29bb" />
 
 ## Overview
 
